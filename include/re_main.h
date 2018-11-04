@@ -44,7 +44,7 @@ int   libre_init(void);
 void  libre_close(void);
 
 int   re_main(re_signal_h *signalh);
-#if HAVE_LIBUV
+#ifdef HAVE_LIBUV
 int   re_main_uvloop (uv_loop_t* loop, re_signal_h *signalh );
 #endif
 void  re_cancel(void);
