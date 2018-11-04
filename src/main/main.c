@@ -1093,6 +1093,12 @@ int re_main(re_signal_h *signalh)
 		   poll_method_name(re->method));
 
 	re->polling = true;
+    
+#ifdef HAVE_LIBUV
+    if (re->method == METHOD_LIBUV && re->uv_loop_is_external) {
+        return 0;
+    }
+#endif
 
 	re_lock(re);
 	for (;;) {
