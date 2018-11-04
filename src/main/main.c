@@ -1148,6 +1148,7 @@ int re_main(re_signal_h *signalh)
 int re_main_uvloop (uv_loop_t* loop, re_signal_h *signalh) {
     
     struct re *re = re_get();
+    re->method = METHOD_LIBUV;
     re->uv_loop_is_external = true;
     re->uv_loop = loop;
 
