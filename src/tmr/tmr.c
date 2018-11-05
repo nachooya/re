@@ -245,8 +245,10 @@ void libuv_timer_handler (uv_timer_t* handler) {
             tmr->th (tmr->arg);
             tmr->th = NULL;
         }
-        uv_close((uv_handle_t *)handler, libuv_timer_close);
-        tmr->uv_timer = NULL;
+        if (handler == tmr->uv_timer) {
+            uv_close((uv_handle_t *)handler, libuv_timer_close);
+            tmr->uv_timer = NULL;
+        }
     }
 }
 
