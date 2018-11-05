@@ -282,6 +282,8 @@ void tmr_start(struct tmr *tmr, uint64_t delay, tmr_h *th, void *arg)
                     uv_timer_init  (loop, handler);
                     tmr->uv_timer = handler;
                 }
+            } else {
+                uv_timer_stop (tmr->uv_timer);
             }
             tmr->jfs = uv_now(loop) + delay;
             uv_timer_start (tmr->uv_timer, libuv_timer_handler, delay, 0);
