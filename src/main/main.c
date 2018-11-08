@@ -399,9 +399,8 @@ static void connection_poll_cb(uv_poll_t* handle, int status, int events)
     int fd = (int) (long) handle->data;
     int flags = 0;
 
-    if (fd == 14) {
-        printf(">>>>>>>>>>>>> connection_poll_cb for FD 14 handle:%p status:%d events:%d\n", handle, status, events);
-    }
+    printf(">>>>>>>>>>>>> connection_poll_cb for FD %d handle:%p status:%d events:%d\n", fd, handle, status, events);
+    fflush(stdout); 
 
     if (uv_is_active((uv_handle_t *)handle)==0) {
         printf (">>>>>>>>>>>> !!!!!!! connection_poll_cb: NOT CALLING CALLBACK AS IT IS INACTIVE fd: %d\n", fd);
@@ -434,14 +433,20 @@ static int set_libuv_fds(struct re *re, int fd, int flags)
     }
 
     uv_poll_t* uv_poll = &re->fhs[fd].uv_poll;
-    
-    if (fd == 14) {
-        printf(">>>>>>>>>>>>> set_libuv_fds: FD IS 14: flags: %d uv_poll:%p\n", flags, uv_poll);
-    }
 
 	DEBUG_INFO("set_libuv_fds: fd=%d flags=0x%02x\n", fd, flags);
 
-	if (flags) {
+	if (flags == 0) {
+        if (fd == 14) {
+            printf(">>>>>>>>>>>>> set_libuv_fds: CLOSING FD IS 14: flags: %d uv_poll:%p\n", flags, uv_poll);
+        }
+              uv_poll_stop (uv_poll);
+//         uv_close ((uv_handle_t *) uv_poll, libuv_fd_close);
+    } else {
+      
+        if (fd == 14) {
+            printf(">>>>>>>>>>>>> set_libuv_fds: STARTING FD IS 14: flags: %d uv_poll:%p\n", flags, uv_poll);
+        }
       
         memset (uv_poll, 0, sizeof(uv_poll_t));
       
@@ -461,10 +466,6 @@ static int set_libuv_fds(struct re *re, int fd, int flags)
             err = 2;
         }
 
-	}
-	else {
-        uv_poll_stop (uv_poll);
-//         uv_close ((uv_handle_t *) uv_poll, libuv_fd_close);
 	}
 
 	return err;
