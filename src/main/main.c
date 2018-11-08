@@ -395,7 +395,6 @@ static void libuv_fd_close (uv_handle_t* handle) {
 static void connection_poll_cb(uv_poll_t* handle, int status, int events)
 {
   
-    
     struct re *re = re_get();
     int fd = (int) handle->data;
     
@@ -414,7 +413,13 @@ static void connection_poll_cb(uv_poll_t* handle, int status, int events)
     if (events & UV_WRITABLE)
         flags |= FD_WRITE;
 
-    re->fhs[fd].fh(flags, re->fhs[fd].arg);
+    if (re->fhs[fd].fh == NULL) {
+        printf ("===> connection_poll_cb: fd: %d hf is NULL!! THIS SHOULD NOT HAPPEN\n", fd);
+    } else if (re->fhs[fd].flags == 0) {
+        printf ("===> connection_poll_cb: fd: %d flags are 0!!! THIS SHOULD NOT HAPPEN\n", fd);
+    } else {
+        re->fhs[fd].fh(flags, re->fhs[fd].arg);
+    }
 
 }
 
