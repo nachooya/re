@@ -412,8 +412,11 @@ static void connection_poll_cb(uv_poll_t* handle, int status, int events)
 
 static int set_libuv_fds(struct re *re, int fd, int flags)
 {
+    printf ("===> set_libuv_fds: re: %p fd: %d flags: %d\n", re, fd, flags);
+  
     int events = 0;
 	int err = 0;
+    
 
 	if (re->uv_loop == NULL) {
 		return EBADFD;
@@ -668,6 +671,9 @@ static int poll_setup(struct re *re)
  */
 int fd_listen(int fd, int flags, fd_h *fh, void *arg)
 {
+  
+    printf ("===> fd_listen: fd: %d flags: %d fd_h: %p arg: %p\n", fd, flags, fh, arg);
+    
 	struct re *re = re_get();
 	int err = 0;
 
@@ -755,6 +761,8 @@ int fd_listen(int fd, int flags, fd_h *fh, void *arg)
  */
 void fd_close(int fd)
 {
+  
+    printf ("===> fd_close: fd: %d\n", fd);
 	(void)fd_listen(fd, 0, NULL, NULL);
 }
 
