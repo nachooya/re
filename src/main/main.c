@@ -399,6 +399,11 @@ static void connection_poll_cb(uv_poll_t* handle, int status, int events)
     int fd = (int) handle->data;
     int flags = 0;
 
+    if (fd == 14) {
+        printf(">>>>>>>>>>>>> connection_poll_cb for FD 14 handle:%p status:%d events:%d\n", handle, status, events);
+    }
+
+
     if (status < 0) 
         flags |= FD_EXCEPT;
     if (events & UV_READABLE)
@@ -412,6 +417,11 @@ static void connection_poll_cb(uv_poll_t* handle, int status, int events)
 
 static int set_libuv_fds(struct re *re, int fd, int flags)
 {
+  
+    if (fd == 14) {
+        printf(">>>>>>>>>>>>> set_libuv_fds: FD IS 14: flags: %d\n", flags);
+    }
+  
     int events = 0;
 	int err = 0;
 
@@ -420,6 +430,10 @@ static int set_libuv_fds(struct re *re, int fd, int flags)
     }
 
     uv_poll_t* uv_poll = &re->fhs[fd].uv_poll;
+    
+    if (fd == 14) {
+        printf(">>>>>>>>>>>>> set_libuv_fds: FD IS 14: flags: %d uv_poll:%p\n", flags, uv_poll);
+    }
 
 	DEBUG_INFO("set_libuv_fds: fd=%d flags=0x%02x\n", fd, flags);
 
@@ -446,7 +460,7 @@ static int set_libuv_fds(struct re *re, int fd, int flags)
 	}
 	else {
         uv_poll_stop (uv_poll);
-//         uv_close ((uv_handle_t *) uv_poll, libuv_fd_close);
+        uv_close ((uv_handle_t *) uv_poll, libuv_fd_close);
 	}
 
 	return err;
