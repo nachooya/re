@@ -403,15 +403,19 @@ static void connection_poll_cb(uv_poll_t* handle, int status, int events)
         printf(">>>>>>>>>>>>> connection_poll_cb for FD 14 handle:%p status:%d events:%d\n", handle, status, events);
     }
 
+    if (uv_is_active((uv_handle_t *)handle)==0) {
+        printf (">>>>>>>>>>>> !!!!!!! connection_poll_cb: NOT CALLING CALLBACK AS IT IS INACTIVE fd: %d\n", fd);
+    } else {
 
-    if (status < 0) 
-        flags |= FD_EXCEPT;
-    if (events & UV_READABLE)
-        flags |= FD_READ;
-    if (events & UV_WRITABLE)
-        flags |= FD_WRITE;
+        if (status < 0) 
+            flags |= FD_EXCEPT;
+        if (events & UV_READABLE)
+            flags |= FD_READ;
+        if (events & UV_WRITABLE)
+            flags |= FD_WRITE;
 
-    re->fhs[fd].fh(flags, re->fhs[fd].arg);
+        re->fhs[fd].fh(flags, re->fhs[fd].arg);
+    }
 
 }
 
