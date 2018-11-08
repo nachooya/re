@@ -396,7 +396,7 @@ static void connection_poll_cb(uv_poll_t* handle, int status, int events)
 {
 
     struct re *re = re_get();
-    int fd = (int) handle->data;
+    int fd = (int) (long) handle->data;
     int flags = 0;
 
     if (fd == 14) {
@@ -441,7 +441,7 @@ static int set_libuv_fds(struct re *re, int fd, int flags)
       
         memset (uv_poll, 0, sizeof(uv_poll_t));
       
-		uv_poll->data = (void*)fd;
+		uv_poll->data = (void*) (long) fd;
 
 		if (flags & FD_READ)
 			events |= UV_READABLE;
@@ -460,7 +460,7 @@ static int set_libuv_fds(struct re *re, int fd, int flags)
 	}
 	else {
         uv_poll_stop (uv_poll);
-        uv_close ((uv_handle_t *) uv_poll, libuv_fd_close);
+//         uv_close ((uv_handle_t *) uv_poll, libuv_fd_close);
 	}
 
 	return err;
