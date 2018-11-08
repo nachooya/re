@@ -414,7 +414,10 @@ static void connection_poll_cb(uv_poll_t* handle, int status, int events)
         if (events & UV_WRITABLE)
             flags |= FD_WRITE;
 
+        printf ("            --- BEFORE CALLBACK FOR FD: %d\n", fd);
         re->fhs[fd].fh(flags, re->fhs[fd].arg);
+        printf ("            --- AFTER CALLBACK FOR FD: %d\n", fd);
+
     }
 
 }
