@@ -191,11 +191,14 @@ static struct re *re_get(void)
 	struct re *re;
 
 	pthread_once(&pt_once, re_once);
-
+    
 	re = pthread_getspecific(pt_key);
 	if (!re) {
 		re = &global_re;
-	}
+        printf ("<<<<<<< re_get GLOBAL IS: %p\n", re);
+	} else {
+        printf ("<<<<<<< re_get FROM THREAD IS: %p\n", re);
+    }
 
 	return re;
 }
