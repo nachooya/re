@@ -412,13 +412,14 @@ static void connection_poll_cb(uv_poll_t* handle, int status, int events)
 
 static int set_libuv_fds(struct re *re, int fd, int flags)
 {
-    printf ("===> set_libuv_fds: re: %p fd: %d flags: %d\n", re, fd, flags);
+    printf ("===> set_libuv_fds: re: %p fd: %d flags: %d \n", re, fd, flags);
   
     int events = 0;
 	int err = 0;
     
 
 	if (re->uv_loop == NULL) {
+        printf("===> set_libuv_fds: ERROR re->uv_loop IS NULL!!!!\n");
 		return EBADFD;
     }
 
@@ -444,6 +445,7 @@ static int set_libuv_fds(struct re *re, int fd, int flags)
 
 	}
 	else {
+        printf ("===> set_libuv_fds: uv_poll_stop ==> fd: %d uv_poll: %p\n", fd, uv_poll);
         uv_poll_stop (uv_poll);
 //         if (!uv_is_closing((uv_handle_t *) uv_poll)) {
 //             uv_close ((uv_handle_t *) uv_poll, libuv_fd_close);
