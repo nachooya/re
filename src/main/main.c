@@ -398,7 +398,7 @@ static void connection_poll_cb(uv_poll_t* handle, int status, int events)
     struct re *re = re_get();
     int fd = (int) handle->data;
     
-    printf ("===> connection_poll_cb: fd: %d status: %d events: %d ACTIVE: %d\n", fd, status, events, uv_is_active(handle));
+    printf ("===> connection_poll_cb: fd: %d status: %d events: %d handle: %p ACTIVE: %d\n", fd, status, events, handle, uv_is_active(handle));
     int flags = 0;
 
     if (status < 0) 
@@ -425,7 +425,7 @@ static void connection_poll_cb(uv_poll_t* handle, int status, int events)
 
 static int set_libuv_fds(struct re *re, int fd, int flags)
 {
-    printf ("===> set_libuv_fds: re: %p fd: %d flags: %d \n", re, fd, flags);
+   
   
     int events = UV_DISCONNECT;
 	int err = 0;
@@ -437,6 +437,8 @@ static int set_libuv_fds(struct re *re, int fd, int flags)
     }
 
     uv_poll_t* uv_poll = &re->fhs[fd].uv_poll;
+    
+    printf ("===> set_libuv_fds: re: %p fd: %d flags: %d handle: %p\n", re, fd, flags, uv_poll);
 
 	DEBUG_INFO("set_libuv_fds: fd=%d flags=0x%02x\n", fd, flags);
 
@@ -450,6 +452,8 @@ static int set_libuv_fds(struct re *re, int fd, int flags)
 			events |= UV_WRITABLE;
 // 		if (flags & FD_EXCEPT)
 
+        printf ("===> set_libuv_fds: uv_poll_start ==> fd: %d uv_poll: %p\n", fd, uv_poll);
+        
         if (uv_poll_init_socket (re->uv_loop, uv_poll, fd) != 0) {
             err = 1;
         } else if (uv_poll_start (uv_poll, events, connection_poll_cb) != 0) {
