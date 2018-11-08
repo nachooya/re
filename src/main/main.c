@@ -90,12 +90,12 @@ enum {
 struct re {
 	/** File descriptor handler set */
 	struct {
-		int flags;           /**< Polling flags (Read, Write, etc.) */
-		fd_h *fh;            /**< Event handler                     */
-		void *arg;           /**< Handler argument                  */
 #ifdef HAVE_LIBUV
         uv_poll_t uv_poll;   /**< libuv handler                     */
 #endif
+		int flags;           /**< Polling flags (Read, Write, etc.) */
+		fd_h *fh;            /**< Event handler                     */
+		void *arg;           /**< Handler argument                  */
 	} *fhs;
 	int maxfds;                  /**< Maximum number of polling fds     */
 	int nfds;                    /**< Number of active file descriptors */
@@ -440,7 +440,9 @@ static int set_libuv_fds(struct re *re, int fd, int flags)
         if (fd == 14) {
             printf(">>>>>>>>>>>>> set_libuv_fds: CLOSING FD IS 14: flags: %d uv_poll:%p\n", flags, uv_poll);
         }
-              uv_poll_stop (uv_poll);
+        if (uv_poll_stop (uv_poll) != 0) {
+            printf("Error on uv_poll_stop\n");
+        }
 //         uv_close ((uv_handle_t *) uv_poll, libuv_fd_close);
     } else {
       
@@ -480,7 +482,7 @@ static int rebuild_fds(struct re *re)
 {
 	int i, err = 0;
 
-	DEBUG_INFO("rebuilding fds (nfds=%d)\n", re->nfds);
+	printf("rebuilding fds (nfds=%d)\n", re->nfds);
 
 	/* Update fd sets */
 	for (i=0; i<re->nfds; i++) {
@@ -610,7 +612,7 @@ static int poll_init(struct re *re)
 /** Free all resources */
 static void poll_close(struct re *re)
 {
-	DEBUG_INFO("poll close\n");
+	printf("***** poll close\n");
 
 	re->fhs = mem_deref(re->fhs);
 	re->maxfds = 0;
