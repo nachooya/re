@@ -444,7 +444,7 @@ static int set_libuv_fds(struct re *re, int fd, int flags)
 
 //     uv_poll_t* uv_poll = &re->fhs[fd].uv_poll;
     
-    printf ("===> set_libuv_fds: re: %p fd: %d flags: %d handle: %p RE pointer:&p LOOP pointer:%p\n", re, fd, flags, re->fhs[fd].uv_poll, re, re->uv_loop);
+    printf ("===> set_libuv_fds: re: %p fd: %d flags: %d handle: %p RE pointer:%p LOOP pointer:%p\n", re, fd, flags, re->fhs[fd].uv_poll, re, re->uv_loop);
 
 	DEBUG_INFO("set_libuv_fds: fd=%d flags=0x%02x\n", fd, flags);
 
@@ -605,6 +605,7 @@ static int poll_init(struct re *re)
     case METHOD_LIBUV:
       
 		if (re->uv_loop == NULL) {
+            printf ("===== [RE]: poll_init CREATEING NEW UV_LOOP <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
             re->uv_loop = malloc(sizeof *re->uv_loop);
 			if (!re->uv_loop)
 				return errno;
@@ -652,6 +653,7 @@ static void poll_close(struct re *re)
 #endif
     
 #ifdef HAVE_LIBUV
+    printf ("[RE]: poll_close re->uv_loop: %p external: %d\n", re->uv_loop, re->uv_loop_is_external);
     if (re->uv_loop != NULL && !re->uv_loop_is_external) {
         uv_stop (re->uv_loop);
 //        if (uv_loop_close (re->uv_loop) != UV_EBUSY) {
@@ -884,9 +886,11 @@ static int fd_poll(struct re *re)
         
 #ifdef HAVE_LIBUV
     case METHOD_LIBUV: {
+          printf ("[RE]: fd_poll WITH UV NOT SHOULD BE CALLED: uv_loop: %p external: %d\n", re->uv_loop, re->uv_loop_is_external);
           if (re->uv_loop == NULL) {
               DEBUG_WARNING("no uv_loop\n");
           } else if (!re->uv_loop_is_external) {
+              printf ("############# THIS IS AN ERROR\n");
               int pending = uv_run (re->uv_loop, UV_RUN_NOWAIT);
           }
           n = 0;
@@ -1135,8 +1139,8 @@ int re_main(re_signal_h *signalh)
     
 #ifdef HAVE_LIBUV
     if (re->method == METHOD_LIBUV && re->uv_loop_is_external) {
-        return 0;
         printf ("=======re_main IS USING LIB_UV EXTERNAL LOOP: %p=======\n", re->uv_loop);
+        return 0;
     }
 #endif
 
@@ -1187,6 +1191,8 @@ int re_main(re_signal_h *signalh)
 
 int re_main_uvloop (uv_loop_t* loop, re_signal_h *signalh) {
     
+    printf ("==== re_main_uvloop with loop: %p\n", loop);
+  
     struct re *re = re_get();
     re->method = METHOD_LIBUV;
     re->uv_loop_is_external = true;
