@@ -94,7 +94,7 @@ struct re {
 		fd_h *fh;            /**< Event handler                     */
 		void *arg;           /**< Handler argument                  */
 #ifdef HAVE_LIBUV
-        uv_poll_t uv_poll;   /**< libuv handler                     */
+        uv_poll_t* uv_poll;  /**< libuv handler                     */
 #endif
 	} *fhs;
 	int maxfds;                  /**< Maximum number of polling fds     */
@@ -436,15 +436,18 @@ static int set_libuv_fds(struct re *re, int fd, int flags)
 		return EBADFD;
     }
 
-    uv_poll_t* uv_poll = &re->fhs[fd].uv_poll;
+//     uv_poll_t* uv_poll = &re->fhs[fd].uv_poll;
     
-    printf ("===> set_libuv_fds: re: %p fd: %d flags: %d handle: %p\n", re, fd, flags, uv_poll);
+    printf ("===> set_libuv_fds: re: %p fd: %d flags: %d handle: %p\n", re, fd, flags, re->fhs[fd].uv_poll);
 
 	DEBUG_INFO("set_libuv_fds: fd=%d flags=0x%02x\n", fd, flags);
 
 	if (flags) {
       
-		uv_poll->data = (void*)fd;
+        uv_poll_t* uv_poll = malloc (sizeof(uv_poll_t));
+        uv_poll->data = (void*)fd;
+
+        re->fhs[fd].uv_poll = uv_poll;
 
 		if (flags & FD_READ)
 			events |= UV_READABLE;
@@ -462,8 +465,10 @@ static int set_libuv_fds(struct re *re, int fd, int flags)
 
 	}
 	else {
+        uv_poll_t* uv_poll = re->fhs[fd].uv_poll;
         printf ("===> set_libuv_fds: uv_poll_stop ==> fd: %d uv_poll: %p\n", fd, uv_poll);
         uv_poll_stop (uv_poll);
+        re->fhs[fd].uv_poll = NULL;
 //         if (!uv_is_closing((uv_handle_t *) uv_poll)) {
 //             uv_close ((uv_handle_t *) uv_poll, libuv_fd_close);
 //         }
