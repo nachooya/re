@@ -195,10 +195,7 @@ static struct re *re_get(void)
 	re = pthread_getspecific(pt_key);
 	if (!re) {
 		re = &global_re;
-        printf (">>>>>> re_get: GOT FROM GLOBAL: %p\n", re);
-	} else {
-        printf (">>>>>> re_get: GOT FROM THREAD: %p\n", re);
-    }
+	}
 
 	return re;
 }
@@ -392,7 +389,7 @@ static int set_kqueue_fds(struct re *re, int fd, int flags)
 #ifdef HAVE_LIBUV
 
 static void libuv_fd_close (uv_handle_t* handle) {
-
+    printf ("libuv_fd_close: handle: %p\n", handle);
 }
 
 static void connection_poll_cb(uv_poll_t* handle, int status, int events)
@@ -436,18 +433,18 @@ static int set_libuv_fds(struct re *re, int fd, int flags)
 			events |= UV_WRITABLE;
 // 		if (flags & FD_EXCEPT)
 
-        if (uv_poll_init_socket (re->uv_loop, uv_poll, fd) != 0) {
+        if (uv_poll_init (re->uv_loop, uv_poll, fd) != 0) {
+            printf ("Error on uv_poll_init\n");
             err = 1;
         } else if (uv_poll_start (uv_poll, events, connection_poll_cb) != 0) {
+          printf ("Error on uv_poll_start\n");
             err = 2;
         }
 
 	}
 	else {
         uv_poll_stop (uv_poll);
-//         if (!uv_is_closing((uv_handle_t *) uv_poll)) {
-//             uv_close ((uv_handle_t *) uv_poll, libuv_fd_close);
-//         }
+        uv_close ((uv_handle_t *) uv_poll, libuv_fd_close);
 	}
 
 	return err;
