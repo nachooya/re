@@ -425,6 +425,8 @@ static int set_libuv_fds(struct re *re, int fd, int flags)
 
 	if (flags) {
       
+        memset (uv_poll, 0, sizeof(uv_poll_t));
+      
 		uv_poll->data = (void*)fd;
 
 		if (flags & FD_READ)
@@ -444,7 +446,7 @@ static int set_libuv_fds(struct re *re, int fd, int flags)
 	}
 	else {
         uv_poll_stop (uv_poll);
-        uv_close ((uv_handle_t *) uv_poll, libuv_fd_close);
+//         uv_close ((uv_handle_t *) uv_poll, libuv_fd_close);
 	}
 
 	return err;
