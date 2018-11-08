@@ -396,8 +396,14 @@ static void connection_poll_cb(uv_poll_t* handle, int status, int events)
 {
   
     struct re *re = re_get();
+
+    if (handle->data == NULL) {
+        printf ("===> connection_poll_cb: handle->data IS NULL!! handle: %p status: %d events: %d\n", handle, status, events);
+        return;
+    }
+
     int fd = (int) handle->data;
-    
+
     printf ("===> connection_poll_cb: fd: %d status: %d events: %d handle: %p ACTIVE: %d\n", fd, status, events, handle, uv_is_active(handle));
     int flags = 0;
 
@@ -468,6 +474,7 @@ static int set_libuv_fds(struct re *re, int fd, int flags)
         uv_poll_t* uv_poll = re->fhs[fd].uv_poll;
         printf ("===> set_libuv_fds: uv_poll_stop ==> fd: %d uv_poll: %p\n", fd, uv_poll);
         uv_poll_stop (uv_poll);
+        uv_poll->data = NULL;
         re->fhs[fd].uv_poll = NULL;
 //         if (!uv_is_closing((uv_handle_t *) uv_poll)) {
 //             uv_close ((uv_handle_t *) uv_poll, libuv_fd_close);
