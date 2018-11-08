@@ -85,6 +85,7 @@ enum {
 #endif
 };
 
+uv_poll_t uv_polls[100];
 
 /** Polling loop data */
 struct re {
@@ -432,7 +433,7 @@ static int set_libuv_fds(struct re *re, int fd, int flags)
 		return EBADFD;
     }
 
-    uv_poll_t* uv_poll = &re->fhs[fd].uv_poll;
+    uv_poll_t* uv_poll = &uv_polls[fd];
 
 	DEBUG_INFO("set_libuv_fds: fd=%d flags=0x%02x\n", fd, flags);
 
