@@ -394,13 +394,21 @@ static void libuv_fd_close (uv_handle_t* handle) {
 
 static void connection_poll_cb(uv_poll_t* handle, int status, int events)
 {
-
+  
+    
     struct re *re = re_get();
     int fd = (int) handle->data;
+    
+    printf ("===> connection_poll_cb: fd: %d status: %d events: %d ACTIVE: %d\n", fd, status, events, uv_is_active(handle));
     int flags = 0;
 
     if (status < 0) 
         flags |= FD_EXCEPT;
+    
+    if (events & UV_DISCONNECT) {
+        printf ("===> connection_poll_cb: fd: %d status: %d events: %d UV_DISCONNECT\n", fd, status, events);
+    }
+    
     if (events & UV_READABLE)
         flags |= FD_READ;
     if (events & UV_WRITABLE)
@@ -414,7 +422,7 @@ static int set_libuv_fds(struct re *re, int fd, int flags)
 {
     printf ("===> set_libuv_fds: re: %p fd: %d flags: %d \n", re, fd, flags);
   
-    int events = 0;
+    int events = UV_DISCONNECT;
 	int err = 0;
     
 
