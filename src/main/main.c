@@ -444,7 +444,7 @@ static int set_libuv_fds(struct re *re, int fd, int flags)
 
 //     uv_poll_t* uv_poll = &re->fhs[fd].uv_poll;
     
-    printf ("===> set_libuv_fds: re: %p fd: %d flags: %d handle: %p\n", re, fd, flags, re->fhs[fd].uv_poll);
+    printf ("===> set_libuv_fds: re: %p fd: %d flags: %d handle: %p RE pointer:&p LOOP pointer:%p\n", re, fd, flags, re->fhs[fd].uv_poll, re, re->uv_loop);
 
 	DEBUG_INFO("set_libuv_fds: fd=%d flags=0x%02x\n", fd, flags);
 
@@ -1136,6 +1136,7 @@ int re_main(re_signal_h *signalh)
 #ifdef HAVE_LIBUV
     if (re->method == METHOD_LIBUV && re->uv_loop_is_external) {
         return 0;
+        printf ("=======re_main IS USING LIB_UV EXTERNAL LOOP: %p=======\n", re->uv_loop);
     }
 #endif
 
