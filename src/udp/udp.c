@@ -788,6 +788,20 @@ int udp_register_helper(struct udp_helper **uhp, struct udp_sock *us,
 	return 0;
 }
 
+/**
+ * Set receive handler on a UDP Socket helper
+ *
+ * @param us  UDP Socket
+ * @param rh  Receive handler
+ * @param arg Handler argument
+ */
+void udp_helper_handler_set(struct udp_helper *uh,
+                            udp_helper_recv_h *rh,
+                            void *arg)
+{
+	uh->recvh = rh ? rh : helper_recv_handler;
+	uh->arg   = arg;
+}
 
 /**
  * Send a UDP Datagram to a remote peer bypassing this helper and
