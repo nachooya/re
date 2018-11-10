@@ -211,13 +211,16 @@ static void udp_read(struct udp_sock *us, int fd)
 
 		le = le->next;
 
-        printf ("UDP udp_read calling helper: %p method: %p, layer:%d, arg:%p\n", uh, uh->recvh, uh->layer, uh->arg);
+        printf (">>>> UDP udp_read calling helper: START --- %p method: %p, layer:%d, arg:%p\n", uh, uh->recvh, uh->layer, uh->arg);
 		hdld = uh->recvh(&src, mb, uh->arg);
+        printf ("<<<< UDP udp_read calling helper: END ---\n");
 		if (hdld)
 			goto out;
 	}
 
+	printf (">>>> UDP udp_read: START --- calling READER\n");
 	us->rh(&src, mb, us->arg);
+    printf (">>>> UDP udp_read: END --- calling READER\n");
 
  out:
 	mem_deref(mb);
