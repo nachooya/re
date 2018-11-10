@@ -211,6 +211,7 @@ static void udp_read(struct udp_sock *us, int fd)
 
 		le = le->next;
 
+        printf ("UDP udp_read calling helper: %p method: %p, layer:%d, arg:%p\n", uh, uh->recvh, uh->layer, uh->arg);
 		hdld = uh->recvh(&src, mb, uh->arg);
 		if (hdld)
 			goto out;
@@ -732,6 +733,8 @@ void udp_thread_detach(struct udp_sock *us)
 
 static void helper_destructor(void *data)
 {
+  
+    printf ("UDP: helper_destructor: %p\n", data);
 	struct udp_helper *uh = data;
 
 	list_unlink(&uh->le);
@@ -764,6 +767,7 @@ int udp_register_helper(struct udp_helper **uhp, struct udp_sock *us,
 			udp_helper_send_h *sh, udp_helper_recv_h *rh,
 			void *arg)
 {
+  
 	struct udp_helper *uh;
 
 	if (!us)
@@ -773,6 +777,8 @@ int udp_register_helper(struct udp_helper **uhp, struct udp_sock *us,
 	if (!uh)
 		return ENOMEM;
 
+    printf ("UDP: udp_register_helper: helper:%p layer: %d arg: %p\n", uh, layer, arg);
+    
 	list_append(&us->helpers, &uh->le, uh);
 
 	uh->layer = layer;
@@ -799,6 +805,7 @@ void udp_helper_handler_set(struct udp_helper *uh,
                             udp_helper_recv_h *rh,
                             void *arg)
 {
+    printf ("UDP: udp_helper_handler_set: helper: %p, recv:%p\n", uh, rh);
 	uh->recvh = rh ? rh : helper_recv_handler;
 	uh->arg   = arg;
 }
