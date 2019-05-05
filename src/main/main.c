@@ -416,7 +416,7 @@ static int set_libuv_fds(struct re *re, int fd, int flags)
 	int err = 0;
 
 	if (re->uv_loop == NULL) {
-		return EBADFD;
+		return 3;
     }
 
     uv_poll_t* uv_poll = &re->fhs[fd].uv_poll;
@@ -727,7 +727,7 @@ int fd_listen(int fd, int flags, fd_h *fh, void *arg)
 #ifdef HAVE_LIBUV
     case METHOD_LIBUV:
         if (re->uv_loop == NULL)
-            return EBADFD;
+            return 3;
         err = set_libuv_fds(re, fd, flags);
         break;
 #endif
